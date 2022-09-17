@@ -47,13 +47,25 @@ public class ArgsTest {
     record StringOption(@Option("d") String directory) {
     
     }
+    
+    @Test
+    void should_parse_multi_options() {
+        MultiOptions multiOption = Args.parse(MultiOptions.class, "-l", "-p", "8080", "-d", "/usr/log");
+        assertTrue(multiOption.logging());
+        assertEquals(8080, multiOption.port());
+        assertEquals("/usr/log", multiOption.directory());
+    }
+    
+    record MultiOptions(@Option("l") boolean logging, @Option("p") int port, @Option("d") String directory) {
+    
+    }
     // TODO: multi options: -l -p 8080 -d /usr/logs
     // sad path
-    // -bool -l t / -l t f
-    // default value
-    // - bool : false
-    // - int : 0
-    // - string : ""
+    // TODO: -bool -l t / -l t f
+    // TODO: default value
+    // TODO: - bool : false
+    // TODO: - int : 0
+    // TODO: - string : ""
     @Disabled
     @Test
     void should_example_1() {
