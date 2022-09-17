@@ -14,7 +14,6 @@ public class ArgsTest {
     // [-l], [-p, 8080], [-d, /usr/logs]
     // {-l:[], -p:[8080], -d:[/usr/logs]}
     // Single Option:
-    // TODO: -- bool -l
     @Test
     void should_set_boolean_option_to_true_if_flag_present() {
         BooleanOption booleanOption = Args.parse(BooleanOption.class, "-l");
@@ -29,9 +28,26 @@ public class ArgsTest {
     
     public static record BooleanOption(@Option("l") boolean logging) {
     }
-    // TODO: -- int
-    // TODO: -- string
-    // multi options: -l -p 8080 -d /usr/logs
+    
+    @Test
+    void should_parse_int_as_option_value() {
+        IntOption intOption = Args.parse(IntOption.class, "-p", "8080");
+        assertEquals(8080, intOption.port());
+    }
+    record IntOption(@Option("p") int port) {
+    
+    }
+    
+    @Test
+    void should_parse_string_as_option_value() {
+        StringOption stringOption = Args.parse(StringOption.class, "-d", "/usr/log");
+        assertEquals("/usr/log", stringOption.directory());
+    }
+    
+    record StringOption(@Option("d") String directory) {
+    
+    }
+    // TODO: multi options: -l -p 8080 -d /usr/logs
     // sad path
     // -bool -l t / -l t f
     // default value
