@@ -30,15 +30,51 @@ public class Args {
         
         Object value = null;
         if (parameter.getType() == boolean.class) {
-            value = arguments.contains("-" + annotation.value());
+            value = parseBoolean(arguments, annotation);
         } else if (parameter.getType() == int.class) {
-            int index = arguments.indexOf("-" + annotation.value());
-            value = Integer.parseInt(arguments.get(index + 1));
+            value = parseInt(arguments, annotation);
         } else if (parameter.getType() == String.class) {
-            int index = arguments.indexOf("-" + annotation.value());
-            value = arguments.get(index + 1);
+            value = parseString(arguments, annotation);
         }
         return value;
     }
+    
+    interface OptionParser {
+        Object parse(List<String> arguments, Option annotation);
+    }
+    
+    private static Object parseString(List<String> arguments, Option annotation) {
+        Object value;
+        int index = arguments.indexOf("-" + annotation.value());
+        value = arguments.get(index + 1);
+        return value;
+    }
+    
+    private static Object parseInt(List<String> arguments, Option annotation) {
+        return new IntParser().parse(arguments, annotation);
+    }
+    
+    private static Object parseBoolean(List<String> arguments, Option annotation) {
+        return new BooleanParser().parse(arguments, annotation);
+    }
+    
+    static class BooleanParser implements OptionParser {
+        @Override
+        public Object parse(List<String> arguments, Option annotation) {
+            return arguments.contains("-" + annotation.value());
+        }
+    }
+    
+    static class IntParser implements OptionParser {
+        @Override
+        public Object parse(List<String> arguments, Option annotation) {
+            Object value;
+            int index = arguments.indexOf("-" + annotation.value());
+            value = Integer.parseInt(arguments.get(index + 1));
+            return value;
+        }
+    }
+    
+    
     
 }
